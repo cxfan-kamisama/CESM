@@ -8,8 +8,8 @@ main() {
 # --- Configuration flags ----
 
 # Machine and project
-readonly MACHINE="um-greatlakes"
-readonly PROJECT="xianglei1"
+readonly MACHINE="cheyenne"
+readonly PROJECT="UMIC0075"
 
 # Simulation
 readonly COMPSET="B1850"
@@ -17,7 +17,7 @@ readonly RESOLUTION="f19_g17"
 readonly CASE_NAME="cesm2.1.3.debug"
 
 # Code and compilation
-readonly DEBUG_COMPILE=true
+readonly DEBUG_COMPILE=false
 
 # Run options
 readonly MODEL_START_TYPE="initial"  # 'initial', 'continue', 'branch', 'hybrid'
@@ -30,18 +30,18 @@ readonly RUN_REFCASE=""
 readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
 
 # Set paths
-readonly CODE_ROOT="${HOME}/models/CESM"
-readonly CASE_ROOT="/scratch/xianglei_root/xianglei1/${USER}/CESM/${CASE_NAME}"
+readonly CODE_ROOT="/glade/work/${USER}/CESM"
+readonly CASE_ROOT="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}"
 
 # Sub-directories
-readonly CASE_BUILD_DIR=${CASE_ROOT}/build
-readonly CASE_ARCHIVE_DIR=${CASE_ROOT}/archive
+readonly CASE_BUILD_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/build"
+readonly CASE_ARCHIVE_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/archive"
 
 # Define type of run
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
 #               'S_2x5_ndays', 'M_2x5_ndays', 'L_2x5_ndays',
 #  or 'production' for full simulation
-readonly run='M_1x10_ndays'
+readonly run='L_1x10_ndays'
 if [ "${run}" != "production" ]; then
 
   # Short test simulations
@@ -242,7 +242,7 @@ case_build() {
         fi
 
         # Run CIME case.build
-        ./case.build
+        qcmd -- ./case.build
 
         # Some user_nl settings won't be updated to *_in files under the run directory
         # Call preview_namelists to make sure *_in and user_nl files are consistent.
@@ -272,7 +272,7 @@ runtime_options() {
     ./xmlchange HIST_OPTION=${HIST_OPTION,,},HIST_N=${HIST_N}
 
     # Coupler budgets (always on)
-    ./xmlchange BUDGETS=TRUE
+    # ./xmlchange BUDGETS=TRUE
 
     # Set resubmissions
     if (( RESUBMIT > 0 )); then
