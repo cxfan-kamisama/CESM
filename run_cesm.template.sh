@@ -247,6 +247,9 @@ case_setup() {
         ./xmlchange --file env_mach_pes.xml --id ROOTPE_ROF --val ${ROOTPE_ROF}
         ./xmlchange --file env_mach_pes.xml --id ROOTPE_LND --val ${ROOTPE_LND}
     fi
+    
+    # Turn on BFB flag
+    ./xmlchange BFBFLAG=TRUE
 
     # Extracts input_data_dir in case it is needed for user edits to the namelist later
     if [ "${DATA_ROOT}" != "" ]; then
