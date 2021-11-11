@@ -20,14 +20,14 @@ readonly CASE_NAME="cesm2.1.3.debug"
 readonly DEBUG_COMPILE=true
 
 # Run options
-readonly MODEL_START_TYPE="initial"  # 'initial', 'continue', 'branch', 'hybrid'
+readonly MODEL_START_TYPE="hybrid"  # 'initial', 'continue', 'branch', 'hybrid'
 readonly START_DATE="0001-01-01"
 
 # Additional options for 'branch' and 'hybrid'
 readonly GET_REFCASE=TRUE
-readonly RUN_REFDIR=""
-readonly RUN_REFCASE=""
-readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
+readonly RUN_REFDIR="cesm2_init"
+readonly RUN_REFCASE="b.e20.B1850.f19_g17.release_cesm2_1_0.020"
+readonly RUN_REFDATE="0301-01-01"   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
 
 # Set paths
 readonly CODE_ROOT="${HOME}/models/CESM"
