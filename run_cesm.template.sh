@@ -14,10 +14,10 @@ readonly PROJECT="xianglei1"
 # Simulation
 readonly COMPSET="B1850"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="cesm2.1.3.debug"
+readonly CASE_NAME="cesm2.1.3.test"
 
 # Code and compilation
-readonly DEBUG_COMPILE=true
+readonly DEBUG_COMPILE=false
 
 # Run options
 readonly MODEL_START_TYPE="hybrid"  # 'initial', 'continue', 'branch', 'hybrid'
@@ -34,14 +34,13 @@ readonly CODE_ROOT="${HOME}/models/CESM"
 readonly CASE_ROOT="/scratch/xianglei_root/xianglei1/${USER}/CESM/${CASE_NAME}"
 
 # Sub-directories
-readonly CASE_BUILD_DIR=${CASE_ROOT}/build
 readonly CASE_ARCHIVE_DIR=${CASE_ROOT}/archive
 
 # Define type of run
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
 #               'S_2x5_ndays', 'M_2x5_ndays', 'L_2x5_ndays',
 #  or 'production' for full simulation
-readonly run='M_1x10_ndays'
+readonly run='S_1x5_ndays'
 if [ "${run}" != "production" ]; then
 
   # Short test simulations
@@ -53,6 +52,7 @@ if [ "${run}" != "production" ]; then
 
   readonly CASE_SCRIPTS_DIR=${CASE_ROOT}/tests/${run}/case_scripts
   readonly CASE_RUN_DIR=${CASE_ROOT}/tests/${run}/run
+  readonly CASE_BUILD_DIR=${CASE_ROOT}/tests/${run}/build
   readonly PELAYOUT=${layout}
   readonly WALLTIME="2:00:00"
   readonly STOP_OPTION=${units}
@@ -67,6 +67,7 @@ else
   # Production simulation
   readonly CASE_SCRIPTS_DIR=${CASE_ROOT}/case_scripts
   readonly CASE_RUN_DIR=${CASE_ROOT}/run
+  readonly CASE_BUILD_DIR=${CASE_ROOT}/build
   readonly PELAYOUT="L"
   readonly WALLTIME="12:00:00"
   readonly STOP_OPTION="nyears"
