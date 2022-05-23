@@ -32,6 +32,7 @@ readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be differ
 # Set paths
 readonly CODE_ROOT="/glade/work/${USER}/CESM"
 readonly CASE_ROOT="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}"
+readonly DATA_ROOT="/glade/scratch/${USER}/inputdata"
 
 # Sub-directories
 readonly CASE_BUILD_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/build"
@@ -189,7 +190,12 @@ case_setup() {
     ./xmlchange DOUT_S_ROOT=${CASE_ARCHIVE_DIR}
 
     # Extracts input_data_dir in case it is needed for user edits to the namelist later
+    if [ "${DATA_ROOT}" != "" ]; then
+        mkdir -p ${DATA_ROOT}
+        ./xmlchange DIN_LOC_ROOT=${DATA_ROOT}
+    fi
     local input_data_dir=`./xmlquery DIN_LOC_ROOT --value`
+    echo "Input Data Path: ${DATA_ROOT}"
 
     # Custom user_nl
     user_nl
