@@ -76,6 +76,17 @@ else
   readonly REST_N="1"
   readonly RESUBMIT="49"
   readonly DO_SHORT_TERM_ARCHIVING=false
+
+  # Custom pelayout
+  readonly CUSTOM_PELAYOUT=false
+  readonly NTASKS_ATM="-2"
+  readonly NTASKS_CPL="-2"
+  readonly NTASKS_OCN="-2"
+  readonly NTASKS_WAV="-2"
+  readonly NTASKS_GLC="-2"
+  readonly NTASKS_ICE="-2"
+  readonly NTASKS_ROF="-2"
+  readonly NTASKS_LND="-2"
 fi
 
 # Coupler history
@@ -188,6 +199,18 @@ case_setup() {
     # Short term archiving
     ./xmlchange DOUT_S=${DO_SHORT_TERM_ARCHIVING^^}
     ./xmlchange DOUT_S_ROOT=${CASE_ARCHIVE_DIR}
+
+    # Custom pelayout
+    if [ "${CUSTOM_PELAYOUT,,}" == "true" ]; then
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_ATM -val ${NTASKS_ATM}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_CPL -val ${NTASKS_CPL}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_OCN -val ${NTASKS_OCN}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_WAV -val ${NTASKS_WAV}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_GLC -val ${NTASKS_GLC}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_ICE -val ${NTASKS_ICE}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_ROF -val ${NTASKS_ROF}
+        ./xmlchange -file env_mach_pes.xml -id NTASKS_LND -val ${NTASKS_LND}
+    fi
 
     # Extracts input_data_dir in case it is needed for user edits to the namelist later
     if [ "${DATA_ROOT}" != "" ]; then
