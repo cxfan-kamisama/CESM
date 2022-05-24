@@ -79,14 +79,32 @@ else
 
   # Custom pelayout
   readonly CUSTOM_PELAYOUT=false
-  readonly NTASKS_ATM="-2"
-  readonly NTASKS_CPL="-2"
+  readonly NTASKS_ATM="-4"
+  readonly NTASKS_CPL="-4"
   readonly NTASKS_OCN="-2"
-  readonly NTASKS_WAV="-2"
-  readonly NTASKS_GLC="-2"
+  readonly NTASKS_WAV="-1"
+  readonly NTASKS_GLC="-1"
   readonly NTASKS_ICE="-2"
   readonly NTASKS_ROF="-2"
   readonly NTASKS_LND="-2"
+
+  readonly NTHRDS_ATM="1"
+  readonly NTHRDS_CPL="1"
+  readonly NTHRDS_OCN="1"
+  readonly NTHRDS_WAV="1"
+  readonly NTHRDS_GLC="1"
+  readonly NTHRDS_ICE="1"
+  readonly NTHRDS_ROF="1"
+  readonly NTHRDS_LND="1"
+
+  readonly ROOTPE_ATM="0"
+  readonly ROOTPE_CPL="0"
+  readonly ROOTPE_OCN="-4"
+  readonly ROOTPE_WAV="0"
+  readonly ROOTPE_GLC="0"
+  readonly ROOTPE_ICE="-2"
+  readonly ROOTPE_ROF="0"
+  readonly ROOTPE_LND="0"
 fi
 
 # Coupler history
@@ -202,14 +220,32 @@ case_setup() {
 
     # Custom pelayout
     if [ "${CUSTOM_PELAYOUT,,}" == "true" ]; then
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_ATM -val ${NTASKS_ATM}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_CPL -val ${NTASKS_CPL}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_OCN -val ${NTASKS_OCN}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_WAV -val ${NTASKS_WAV}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_GLC -val ${NTASKS_GLC}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_ICE -val ${NTASKS_ICE}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_ROF -val ${NTASKS_ROF}
-        ./xmlchange -file env_mach_pes.xml -id NTASKS_LND -val ${NTASKS_LND}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_ATM --val ${NTASKS_ATM}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_CPL --val ${NTASKS_CPL}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_OCN --val ${NTASKS_OCN}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_WAV --val ${NTASKS_WAV}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_GLC --val ${NTASKS_GLC}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_ICE --val ${NTASKS_ICE}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_ROF --val ${NTASKS_ROF}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_LND --val ${NTASKS_LND}
+
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_ATM --val ${NTHRDS_ATM}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_CPL --val ${NTHRDS_CPL}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_OCN --val ${NTHRDS_OCN}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_WAV --val ${NTHRDS_WAV}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_GLC --val ${NTHRDS_GLC}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_ICE --val ${NTHRDS_ICE}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_ROF --val ${NTHRDS_ROF}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_LND --val ${NTHRDS_LND}
+
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_ATM --val ${ROOTPE_ATM}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_CPL --val ${ROOTPE_CPL}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_OCN --val ${ROOTPE_OCN}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_WAV --val ${ROOTPE_WAV}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_GLC --val ${ROOTPE_GLC}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_ICE --val ${ROOTPE_ICE}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_ROF --val ${ROOTPE_ROF}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_LND --val ${ROOTPE_LND}
     fi
 
     # Extracts input_data_dir in case it is needed for user edits to the namelist later
