@@ -12,16 +12,16 @@ readonly MACHINE="cheyenne"
 readonly PROJECT="UMIC0075"
 
 # Simulation
-readonly COMPSET="B1850"
+readonly COMPSET="ETEST"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="cesm2.1.3.debug"
+readonly CASE_NAME="SSI_CESM213_TSIS_20yr"
 
 # Code and compilation
 readonly DEBUG_COMPILE=false
 
 # Run options
 readonly MODEL_START_TYPE="initial"  # 'initial', 'continue', 'branch', 'hybrid'
-readonly START_DATE="0001-01-01"
+readonly START_DATE="2000-01-01"
 
 # Additional options for 'branch' and 'hybrid'
 readonly GET_REFCASE=TRUE
@@ -42,7 +42,7 @@ readonly CASE_ARCHIVE_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/archiv
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
 #               'S_2x5_ndays', 'M_2x5_ndays', 'L_2x5_ndays',
 #  or 'production' for full simulation
-readonly run='L_1x10_ndays'
+readonly run='production'
 if [ "${run}" != "production" ]; then
 
   # Short test simulations
@@ -71,14 +71,14 @@ else
   readonly PELAYOUT="L"
   readonly WALLTIME="12:00:00"
   readonly STOP_OPTION="nyears"
-  readonly STOP_N="1"
+  readonly STOP_N="3"
   readonly REST_OPTION="nyears"
   readonly REST_N="1"
-  readonly RESUBMIT="49"
+  readonly RESUBMIT="6"
   readonly DO_SHORT_TERM_ARCHIVING=false
 
   # Custom pelayout
-  readonly CUSTOM_PELAYOUT=false
+  readonly CUSTOM_PELAYOUT=true
   readonly NTASKS_ATM="-4"
   readonly NTASKS_CPL="-4"
   readonly NTASKS_OCN="-2"
@@ -155,11 +155,17 @@ echo $'\n----- All done -----\n'
 user_nl() {
 
 cat << EOF >> user_nl_cam
-
+&cam_inparm
+spectralflux = .true.
+nhtfrq = 0
+mfilt  = 1
+pertlim= 0.d-14
+solar_irrad_data_file="/glade/u/home/cxfan/Scratch/SSI/Solar_avg_CESM_TSIS.nc"
+solar_htng_spctrl_scl=.true.
 EOF
 
 cat << EOF >> user_nl_clm
-
+use_init_interp = .true.
 EOF
 
 }
@@ -188,7 +194,8 @@ create_newcase() {
         --machine ${MACHINE} \
         --project ${PROJECT} \
         --walltime ${WALLTIME} \
-        --pecount ${PELAYOUT}
+        --pecount ${PELAYOUT} \
+        --run-unsupported
 
     if [ $? != 0 ]; then
       echo $'\nNote: if create_newcase failed because sub-directory already exists:'
