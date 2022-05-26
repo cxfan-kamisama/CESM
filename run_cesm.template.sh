@@ -14,7 +14,7 @@ readonly PROJECT="UMIC0075"
 # Simulation
 readonly COMPSET="ETEST"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="SSI_CESM213_TSIS_20yr"
+readonly CASE_NAME="SSI_CESM213_Control_20yr"
 
 # Code and compilation
 readonly DEBUG_COMPILE=false
@@ -160,7 +160,7 @@ spectralflux = .true.
 nhtfrq = 0
 mfilt  = 1
 pertlim= 0.d-14
-solar_irrad_data_file="/glade/u/home/cxfan/Scratch/SSI/Solar_avg_CESM_TSIS.nc"
+solar_irrad_data_file="/glade/u/home/cxfan/Scratch/SSI/Solar_avg_CESM_control.nc"
 solar_htng_spctrl_scl=.true.
 EOF
 
