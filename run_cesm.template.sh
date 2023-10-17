@@ -14,10 +14,10 @@ readonly PROJECT="UMIC0075"
 # Simulation
 readonly COMPSET="B1850"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="cesm2.1.3.debug"
+readonly CASE_NAME="CESM2.1.3_SolarFarm_${COMPSET}_${RESOLUTION}_Test"
 
 # Code and compilation
-readonly DEBUG_COMPILE=false
+readonly DEBUG_COMPILE=true
 
 # Run options
 readonly MODEL_START_TYPE="initial"  # 'initial', 'continue', 'branch', 'hybrid'
@@ -31,12 +31,12 @@ readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be differ
 
 # Set paths
 readonly CODE_ROOT="/glade/work/${USER}/CESM"
-readonly CASE_ROOT="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}"
+readonly CASE_ROOT="/glade/scratch/${USER}/CESM_UMich/${CASE_NAME}"
 readonly DATA_ROOT="/glade/scratch/${USER}/inputdata"
 
 # Sub-directories
-readonly CASE_BUILD_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/build"
-readonly CASE_ARCHIVE_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/archive"
+readonly CASE_BUILD_DIR="/glade/scratch/${USER}/CESM_UMich/${CASE_NAME}/build"
+readonly CASE_ARCHIVE_DIR="/glade/scratch/${USER}/CESM_UMich/${CASE_NAME}/archive"
 
 # Define type of run
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
@@ -71,10 +71,10 @@ else
   readonly PELAYOUT="L"
   readonly WALLTIME="12:00:00"
   readonly STOP_OPTION="nyears"
-  readonly STOP_N="1"
+  readonly STOP_N="6"
   readonly REST_OPTION="nyears"
-  readonly REST_N="1"
-  readonly RESUBMIT="49"
+  readonly REST_N="2"
+  readonly RESUBMIT="5"
   readonly DO_SHORT_TERM_ARCHIVING=false
 
   # Custom pelayout
@@ -247,7 +247,7 @@ case_setup() {
         ./xmlchange --file env_mach_pes.xml --id ROOTPE_ROF --val ${ROOTPE_ROF}
         ./xmlchange --file env_mach_pes.xml --id ROOTPE_LND --val ${ROOTPE_LND}
     fi
-    
+
     # Turn on BFB flag
     ./xmlchange BFBFLAG=TRUE
 
