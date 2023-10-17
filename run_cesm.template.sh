@@ -176,6 +176,11 @@ create_newcase() {
         return
     fi
 
+    echo $'\n----- Updating externals -----\n'
+    pushd ${CODE_ROOT}
+    ./manage_externals/checkout_externals -vv
+    popd
+
     echo $'\n----- Starting create_newcase -----\n'
 
     ${CODE_ROOT}/cime/scripts/create_newcase \
