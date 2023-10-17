@@ -315,7 +315,8 @@ case_build() {
         fi
 
         # Run CIME case.build
-        qcmd -- ./case.build
+        # qcmd -- ./case.build
+        ./case.build
 
         # Some user_nl settings won't be updated to *_in files under the run directory
         # Call preview_namelists to make sure *_in and user_nl files are consistent.
