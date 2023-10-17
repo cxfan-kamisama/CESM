@@ -8,7 +8,7 @@ main() {
 # --- Configuration flags ----
 
 # Machine and project
-readonly MACHINE="cheyenne"
+readonly MACHINE="derecho"
 readonly PROJECT="UMIC0075"
 
 # Simulation
@@ -32,7 +32,7 @@ readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be differ
 # Set paths
 readonly CODE_ROOT="${WORK}/CESM"
 readonly CASE_ROOT="${SCRATCH}/CESM_UMich/${CASE_NAME}"
-readonly DATA_ROOT="${SCRATCH}/inputdata"
+readonly DATA_ROOT=""
 
 # Sub-directories
 readonly CASE_BUILD_DIR="${SCRATCH}/CESM_UMich/${CASE_NAME}/build"
@@ -42,7 +42,7 @@ readonly CASE_ARCHIVE_DIR="${SCRATCH}/CESM_UMich/${CASE_NAME}/archive"
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
 #               'S_2x5_ndays', 'M_2x5_ndays', 'L_2x5_ndays',
 #  or 'production' for full simulation
-readonly run='L_1x10_ndays'
+readonly run='S_1x1_ndays'
 if [ "${run}" != "production" ]; then
 
   # Short test simulations
@@ -55,7 +55,7 @@ if [ "${run}" != "production" ]; then
   readonly CASE_SCRIPTS_DIR=${CASE_ROOT}/tests/${run}/case_scripts
   readonly CASE_RUN_DIR=${CASE_ROOT}/tests/${run}/run
   readonly PELAYOUT=${layout}
-  readonly WALLTIME="2:00:00"
+  readonly WALLTIME="0:45:00"
   readonly STOP_OPTION=${units}
   readonly STOP_N=${length}
   readonly REST_OPTION=${STOP_OPTION}
@@ -159,7 +159,8 @@ cat << EOF >> user_nl_cam
 EOF
 
 cat << EOF >> user_nl_clm
-
+use_solar_farm = .true.
+fsolarfarm = '/glade/u/home/cxfan/Scratch/data/solarfarm_spec_dummy.nc'
 EOF
 
 }
