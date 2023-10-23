@@ -8,13 +8,13 @@ main() {
 # --- Configuration flags ----
 
 # Machine and project
-readonly MACHINE="cheyenne"
-readonly PROJECT="UMIC0075"
+readonly MACHINE="um-greatlakes"
+readonly PROJECT="xianglei1"
 
 # Simulation
 readonly COMPSET="ETEST"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="SSI_CESM213_TSIS_20yr"
+readonly CASE_NAME="SSI_CESM213_TSIS_debug.ens1"
 
 # Code and compilation
 readonly DEBUG_COMPILE=false
@@ -30,13 +30,13 @@ readonly RUN_REFCASE=""
 readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
 
 # Set paths
-readonly CODE_ROOT="/glade/work/${USER}/CESM"
-readonly CASE_ROOT="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}"
-readonly DATA_ROOT="/glade/scratch/${USER}/inputdata"
+readonly CODE_ROOT="${HOME}/models/CESM"
+readonly CASE_ROOT="/scratch/xianglei_root/xianglei1/${USER}/CESM_2.1.3/${CASE_NAME}"
+readonly DATA_ROOT="/scratch/xianglei_root/xianglei1/${USER}/inputdata"
 
 # Sub-directories
-readonly CASE_BUILD_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/build"
-readonly CASE_ARCHIVE_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/archive"
+readonly CASE_BUILD_DIR="${CASE_ROOT}/build"
+readonly CASE_ARCHIVE_DIR="${CASE_ROOT}/archive"
 
 # Define type of run
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
@@ -69,12 +69,12 @@ else
   readonly CASE_SCRIPTS_DIR=${CASE_ROOT}/case_scripts
   readonly CASE_RUN_DIR=${CASE_ROOT}/run
   readonly PELAYOUT="L"
-  readonly WALLTIME="12:00:00"
-  readonly STOP_OPTION="nyears"
-  readonly STOP_N="3"
-  readonly REST_OPTION="nyears"
-  readonly REST_N="1"
-  readonly RESUBMIT="6"
+  readonly WALLTIME="0:30:00"
+  readonly STOP_OPTION="ndays"
+  readonly STOP_N="5"
+  readonly REST_OPTION="ndays"
+  readonly REST_N="5"
+  readonly RESUBMIT="0"
   readonly DO_SHORT_TERM_ARCHIVING=false
 
   # Custom pelayout
@@ -112,12 +112,12 @@ readonly HIST_OPTION="nyears"
 readonly HIST_N="5"
 
 # Leave empty (unless you understand what it does)
-readonly OLD_EXECUTABLE=""
+readonly OLD_EXECUTABLE="/scratch/xianglei_root/xianglei1/cxfan/CESM_2.1.3/SSI_CESM213_Control_debug.ens1/build/cesm.exe"
 
 # --- Toggle flags for what to do ----
 do_create_newcase=true
 do_case_setup=true
-do_case_build=true
+do_case_build=false
 do_case_submit=true
 
 # --- Now, do the work ---
@@ -157,10 +157,10 @@ user_nl() {
 cat << EOF >> user_nl_cam
 &cam_inparm
 spectralflux = .true.
-nhtfrq = 0
+nhtfrq = 1
 mfilt  = 1
-pertlim= 0.d-14
-solar_irrad_data_file="/glade/u/home/cxfan/Scratch/SSI/Solar_avg_CESM_TSIS.nc"
+pertlim= 1.d-14
+solar_irrad_data_file="/scratch/xianglei_root/xianglei1/cxfan/SSI_data/Solar_avg_CESM_TSIS.nc"
 solar_htng_spctrl_scl=.true.
 EOF
 
@@ -314,7 +314,7 @@ case_build() {
         fi
 
         # Run CIME case.build
-        qcmd -- ./case.build
+        ./case.build
 
         # Some user_nl settings won't be updated to *_in files under the run directory
         # Call preview_namelists to make sure *_in and user_nl files are consistent.
