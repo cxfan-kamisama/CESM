@@ -30,13 +30,13 @@ readonly RUN_REFCASE=""
 readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
 
 # Set paths
-readonly CODE_ROOT="/glade/work/${USER}/CESM"
-readonly CASE_ROOT="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}"
-readonly DATA_ROOT="/glade/scratch/${USER}/inputdata"
+readonly CODE_ROOT="${WORK}/CESM"
+readonly CASE_ROOT="${SCRATCH}/CESM_2.1.3/${CASE_NAME}"
+readonly DATA_ROOT=""
 
 # Sub-directories
-readonly CASE_BUILD_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/build"
-readonly CASE_ARCHIVE_DIR="/glade/scratch/${USER}/CESM_2.1.3/${CASE_NAME}/archive"
+readonly CASE_BUILD_DIR="${SCRATCH}/CESM_2.1.3/${CASE_NAME}/build"
+readonly CASE_ARCHIVE_DIR="${SCRATCH}/CESM_2.1.3/${CASE_NAME}/archive"
 
 # Define type of run
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
