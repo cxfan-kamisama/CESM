@@ -115,6 +115,7 @@ readonly HIST_N="5"
 readonly OLD_EXECUTABLE=""
 
 # --- Toggle flags for what to do ----
+do_checkout_externals=true
 do_create_newcase=true
 do_case_setup=true
 do_case_build=true
@@ -177,10 +178,12 @@ create_newcase() {
         return
     fi
 
-    echo $'\n----- Updating externals -----\n'
-    pushd ${CODE_ROOT}
-    ./manage_externals/checkout_externals -vv
-    popd
+    if [ "${do_checkout_externals,,}" == "true" ]; then
+        echo $'\n----- Updating externals -----\n'
+        pushd ${CODE_ROOT}
+        ./manage_externals/checkout_externals -vv
+        popd
+    fi
 
     echo $'\n----- Starting create_newcase -----\n'
 
