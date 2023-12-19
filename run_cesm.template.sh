@@ -11,6 +11,10 @@ main() {
 readonly MACHINE="derecho"
 readonly PROJECT="UMIC0075"
 
+# Source code
+readonly CODE_REPO_URL="https://github.com/cxfan1997/CESM.git"
+readonly CODE_BRANCH="cxfan/SolarFarm"
+
 # Simulation
 readonly COMPSET="B1850"
 readonly RESOLUTION="f19_g17"
@@ -30,11 +34,11 @@ readonly RUN_REFCASE=""
 readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
 
 # Set paths
-readonly CODE_ROOT="${WORK}/CESM"
 readonly CASE_ROOT="${SCRATCH}/CESM_UMich/${CASE_NAME}"
 readonly DATA_ROOT=""
 
 # Sub-directories
+readonly CODE_ROOT="${CASE_ROOT}/src"
 readonly CASE_BUILD_DIR="${SCRATCH}/CESM_UMich/${CASE_NAME}/build"
 readonly CASE_ARCHIVE_DIR="${SCRATCH}/CESM_UMich/${CASE_NAME}/archive"
 
@@ -115,7 +119,7 @@ readonly HIST_N="5"
 readonly OLD_EXECUTABLE=""
 
 # --- Toggle flags for what to do ----
-do_checkout_externals=true
+do_checkout_code=true
 do_create_newcase=true
 do_case_setup=true
 do_case_build=true
@@ -125,6 +129,9 @@ do_case_submit=true
 
 # Make directories created by this script world-readable
 umask 022
+
+# Checkout code
+checkout_code
 
 # Create case
 create_newcase
@@ -179,18 +186,44 @@ EOF
 ######################################################
 
 #-----------------------------------------------------
+checkout_code() {
+
+    if [ "${do_checkout_code,,}" != "true" ]; then
+        # Check if source code directory exists
+        if [ ! -d "${CODE_ROOT}" ]; then
+            echo "Error: Source code directory '${CODE_ROOT}' does not exist, while do_checkout_code = ${do_checkout_code}."
+            exit 20
+        fi
+
+        echo $'\n----- Skipping checkout_code -----\n'
+        return
+    fi
+
+    if [ -d "${CODE_ROOT}" ]; then
+        echo "Error: Source code directory '${CODE_ROOT}' already exists, while do_checkout_code = ${do_checkout_code}."
+        exit 21
+    fi
+
+    echo $'\n----- Starting checkout_code -----\n'
+
+    # Checkout code
+    mkdir -p ${CODE_ROOT}
+    pushd ${CODE_ROOT}
+    git clone ${CODE_REPO_URL} .
+    git checkout ${CODE_BRANCH}
+
+    # Checkout externals
+    ./manage_externals/checkout_externals -vv
+
+    popd
+}
+
+#-----------------------------------------------------
 create_newcase() {
 
     if [ "${do_create_newcase,,}" != "true" ]; then
         echo $'\n----- Skipping create_newcase -----\n'
         return
-    fi
-
-    if [ "${do_checkout_externals,,}" == "true" ]; then
-        echo $'\n----- Updating externals -----\n'
-        pushd ${CODE_ROOT}
-        ./manage_externals/checkout_externals -vv
-        popd
     fi
 
     echo $'\n----- Starting create_newcase -----\n'
