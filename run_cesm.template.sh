@@ -22,7 +22,7 @@ readonly DATE=`date +%Y%m%d`
 readonly CASE_NAME="CESM2.1.3_${CODE_BRANCH//\//_}_${COMPSET}_${RESOLUTION}_${DATE}"
 
 # Code and compilation
-readonly DEBUG_COMPILE=true
+readonly DEBUG_COMPILE=false
 
 # Run options
 readonly MODEL_START_TYPE="initial"  # 'initial', 'continue', 'branch', 'hybrid'
@@ -47,7 +47,7 @@ readonly CASE_ARCHIVE_DIR="${SCRATCH}/CESM_UMich/${CASE_NAME}/archive"
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
 #               'S_2x5_ndays', 'M_2x5_ndays', 'L_2x5_ndays',
 #  or 'production' for full simulation
-readonly run='S_1x10_ndays'
+readonly run='production'
 if [ "${run}" != "production" ]; then
 
   # Short test simulations
@@ -74,12 +74,12 @@ else
   readonly CASE_SCRIPTS_DIR=${CASE_ROOT}/case_scripts
   readonly CASE_RUN_DIR=${CASE_ROOT}/run
   readonly PELAYOUT="L"
-  readonly WALLTIME="12:00:00"
+  readonly WALLTIME="3:00:00"
   readonly STOP_OPTION="nyears"
-  readonly STOP_N="6"
+  readonly STOP_N="1"
   readonly REST_OPTION="nyears"
-  readonly REST_N="2"
-  readonly RESUBMIT="5"
+  readonly REST_N="1"
+  readonly RESUBMIT="0"
   readonly DO_SHORT_TERM_ARCHIVING=false
 
   # Custom pelayout
@@ -164,20 +164,12 @@ echo $'\n----- All done -----\n'
 user_nl() {
 
 cat << EOF >> user_nl_cam
-mfilt = 24
-nhtfrq = -1
+
 EOF
 
 cat << EOF >> user_nl_clm
-use_solar_farm = .false.
+use_solar_farm = .true.
 fsolarfarm = '${SCRATCH}/data/solarfarm_spec.nc'
-
-hist_dov2xy = .true.
-hist_avgflag_pertape = 'A','A'
-hist_mfilt = 24,24
-hist_nhtfrq = -1,-1
-hist_fincl1 = 'TBOT','TSA','TG','FSDS','FSA','FSR','FSRND','FSRNI','FSRVD','FSRVI','SABG','SABV','FLDS','FIRA','FIRE','FSH','FSH_G','FSH_V','EFLX_LH_TOT','FCEV','FGEV','EFLX_SOIL_GRND','ALBD','ALBI','ALBGRD','ALBGRI','EMG','EMV'
-hist_fincl2 = 'TPNL_SFC','SABG_PANEL','FIR_PNL_NET','FIR_PNL_ABS','FIR_PNL_EMIS','FIR_GRND_NET','FIR_GRND_ABS','FIR_GRND_EMIS','FSH_PNL','EFLX_LH_PNL','ELEC_PNL'
 EOF
 
 }
