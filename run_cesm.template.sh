@@ -156,12 +156,20 @@ echo $'\n----- All done -----\n'
 user_nl() {
 
 cat << EOF >> user_nl_cam
-
+mfilt = 24
+nhtfrq = -1
 EOF
 
 cat << EOF >> user_nl_clm
-use_solar_farm = .true.
-fsolarfarm = '${SCRATCH}/data/solarfarm_spec_dummy.nc'
+use_solar_farm = .false.
+fsolarfarm = '${SCRATCH}/data/solarfarm_spec.nc'
+
+hist_dov2xy = .true.
+hist_avgflag_pertape = 'A','A'
+hist_mfilt = 24,24
+hist_nhtfrq = -1,-1
+hist_fincl1 = 'TBOT','TSA','TG','FSDS','FSA','FSR','FSRND','FSRNI','FSRVD','FSRVI','SABG','SABV','FLDS','FIRA','FIRE','FSH','FSH_G','FSH_V','EFLX_LH_TOT','FCEV','FGEV','EFLX_SOIL_GRND','ALBD','ALBI','ALBGRD','ALBGRI','EMG','EMV'
+hist_fincl2 = 'TPNL_SFC','SABG_PANEL','FIR_PNL_NET','FIR_PNL_ABS','FIR_PNL_EMIS','FIR_GRND_NET','FIR_GRND_ABS','FIR_GRND_EMIS','FSH_PNL','EFLX_LH_PNL','ELEC_PNL'
 EOF
 
 }
