@@ -18,7 +18,8 @@ readonly CODE_BRANCH="cxfan/SolarFarm"
 # Simulation
 readonly COMPSET="B1850"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="CESM2.1.3_SolarFarm_${COMPSET}_${RESOLUTION}_Test"
+readonly DATE=`date +%Y%m%d`
+readonly CASE_NAME="CESM2.1.3_${CODE_BRANCH//\//_}_${COMPSET}_${RESOLUTION}_${DATE}"
 
 # Code and compilation
 readonly DEBUG_COMPILE=true
