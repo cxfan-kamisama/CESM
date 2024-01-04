@@ -11,10 +11,15 @@ main() {
 readonly MACHINE="um-greatlakes"
 readonly PROJECT="xianglei1"
 
+# Source code
+readonly CODE_REPO_URL="https://github.com/cxfan1997/CESM.git"
+readonly CODE_BRANCH="cxfan/SolarFarm"
+
 # Simulation
 readonly COMPSET="B1850"
 readonly RESOLUTION="f19_g17"
-readonly CASE_NAME="cesm2.1.3.test"
+readonly DATE=`date +%Y%m%d`
+readonly CASE_NAME="CESM2.1.3_${CODE_BRANCH//\//_}_${COMPSET}_${RESOLUTION}_${DATE}"
 
 # Code and compilation
 readonly DEBUG_COMPILE=false
@@ -25,22 +30,23 @@ readonly START_DATE="0001-01-01"
 
 # Additional options for 'branch' and 'hybrid'
 readonly GET_REFCASE=TRUE
-readonly RUN_REFDIR="cesm2_init"
-readonly RUN_REFCASE="b.e20.B1850.f19_g17.release_cesm2_1_0.020"
-readonly RUN_REFDATE="0301-01-01"   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
+readonly RUN_REFDIR=""
+readonly RUN_REFCASE=""
+readonly RUN_REFDATE=""   # same as MODEL_START_DATE for 'branch', can be different for 'hybrid'
 
 # Set paths
-readonly CODE_ROOT="${HOME}/models/CESM"
-readonly CASE_ROOT="/scratch/xianglei_root/xianglei1/${USER}/CESM/${CASE_NAME}"
+readonly CASE_ROOT="${SCRATCH}/CESM_UMich/${CASE_NAME}"
+readonly DATA_ROOT=""
 
 # Sub-directories
-readonly CASE_ARCHIVE_DIR=${CASE_ROOT}/archive
+readonly CODE_ROOT="${CASE_ROOT}/src"
+readonly CASE_ARCHIVE_DIR="${CASE_ROOT}/archive"
 
 # Define type of run
 #  short tests: 'S_1x10_ndays', 'M_1x10_ndays', 'L_1x10_ndays',
 #               'S_2x5_ndays', 'M_2x5_ndays', 'L_2x5_ndays',
 #  or 'production' for full simulation
-readonly run='S_1x5_ndays'
+readonly run='production'
 if [ "${run}" != "production" ]; then
 
   # Short test simulations
@@ -54,7 +60,7 @@ if [ "${run}" != "production" ]; then
   readonly CASE_RUN_DIR=${CASE_ROOT}/tests/${run}/run
   readonly CASE_BUILD_DIR=${CASE_ROOT}/tests/${run}/build
   readonly PELAYOUT=${layout}
-  readonly WALLTIME="2:00:00"
+  readonly WALLTIME="0:45:00"
   readonly STOP_OPTION=${units}
   readonly STOP_N=${length}
   readonly REST_OPTION=${STOP_OPTION}
@@ -69,13 +75,42 @@ else
   readonly CASE_RUN_DIR=${CASE_ROOT}/run
   readonly CASE_BUILD_DIR=${CASE_ROOT}/build
   readonly PELAYOUT="L"
-  readonly WALLTIME="12:00:00"
+  readonly WALLTIME="3:00:00"
   readonly STOP_OPTION="nyears"
   readonly STOP_N="1"
   readonly REST_OPTION="nyears"
   readonly REST_N="1"
-  readonly RESUBMIT="49"
+  readonly RESUBMIT="0"
   readonly DO_SHORT_TERM_ARCHIVING=false
+
+  # Custom pelayout
+  readonly CUSTOM_PELAYOUT=false
+  readonly NTASKS_ATM="-4"
+  readonly NTASKS_CPL="-4"
+  readonly NTASKS_OCN="-2"
+  readonly NTASKS_WAV="-1"
+  readonly NTASKS_GLC="-1"
+  readonly NTASKS_ICE="-2"
+  readonly NTASKS_ROF="-2"
+  readonly NTASKS_LND="-2"
+
+  readonly NTHRDS_ATM="1"
+  readonly NTHRDS_CPL="1"
+  readonly NTHRDS_OCN="1"
+  readonly NTHRDS_WAV="1"
+  readonly NTHRDS_GLC="1"
+  readonly NTHRDS_ICE="1"
+  readonly NTHRDS_ROF="1"
+  readonly NTHRDS_LND="1"
+
+  readonly ROOTPE_ATM="0"
+  readonly ROOTPE_CPL="0"
+  readonly ROOTPE_OCN="-4"
+  readonly ROOTPE_WAV="0"
+  readonly ROOTPE_GLC="0"
+  readonly ROOTPE_ICE="-2"
+  readonly ROOTPE_ROF="0"
+  readonly ROOTPE_LND="0"
 fi
 
 # Coupler history
@@ -86,6 +121,7 @@ readonly HIST_N="5"
 readonly OLD_EXECUTABLE=""
 
 # --- Toggle flags for what to do ----
+do_checkout_code=true
 do_create_newcase=true
 do_case_setup=true
 do_case_build=true
@@ -95,6 +131,9 @@ do_case_submit=true
 
 # Make directories created by this script world-readable
 umask 022
+
+# Checkout code
+checkout_code
 
 # Create case
 create_newcase
@@ -130,7 +169,8 @@ cat << EOF >> user_nl_cam
 EOF
 
 cat << EOF >> user_nl_clm
-
+use_solar_farm = .true.
+fsolarfarm = '${SCRATCH}/data/solarfarm_spec.nc'
 EOF
 
 }
@@ -138,6 +178,39 @@ EOF
 ######################################################
 ### Most users won't need to change anything below ###
 ######################################################
+
+#-----------------------------------------------------
+checkout_code() {
+
+    if [ "${do_checkout_code,,}" != "true" ]; then
+        # Check if source code directory exists
+        if [ ! -d "${CODE_ROOT}" ]; then
+            echo "Error: Source code directory '${CODE_ROOT}' does not exist, while do_checkout_code = ${do_checkout_code}."
+            exit 20
+        fi
+
+        echo $'\n----- Skipping checkout_code -----\n'
+        return
+    fi
+
+    if [ -d "${CODE_ROOT}" ]; then
+        echo "Error: Source code directory '${CODE_ROOT}' already exists, while do_checkout_code = ${do_checkout_code}."
+        exit 21
+    fi
+
+    echo $'\n----- Starting checkout_code -----\n'
+
+    # Checkout code
+    mkdir -p ${CODE_ROOT}
+    pushd ${CODE_ROOT}
+    git clone ${CODE_REPO_URL} .
+    git checkout ${CODE_BRANCH}
+
+    # Checkout externals
+    ./manage_externals/checkout_externals -vv
+
+    popd
+}
 
 #-----------------------------------------------------
 create_newcase() {
@@ -189,11 +262,46 @@ case_setup() {
     ./xmlchange DOUT_S=${DO_SHORT_TERM_ARCHIVING^^}
     ./xmlchange DOUT_S_ROOT=${CASE_ARCHIVE_DIR}
 
+    # Custom pelayout
+    if [ "${CUSTOM_PELAYOUT,,}" == "true" ]; then
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_ATM --val ${NTASKS_ATM}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_CPL --val ${NTASKS_CPL}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_OCN --val ${NTASKS_OCN}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_WAV --val ${NTASKS_WAV}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_GLC --val ${NTASKS_GLC}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_ICE --val ${NTASKS_ICE}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_ROF --val ${NTASKS_ROF}
+        ./xmlchange --file env_mach_pes.xml --id NTASKS_LND --val ${NTASKS_LND}
+
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_ATM --val ${NTHRDS_ATM}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_CPL --val ${NTHRDS_CPL}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_OCN --val ${NTHRDS_OCN}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_WAV --val ${NTHRDS_WAV}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_GLC --val ${NTHRDS_GLC}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_ICE --val ${NTHRDS_ICE}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_ROF --val ${NTHRDS_ROF}
+        ./xmlchange --file env_mach_pes.xml --id NTHRDS_LND --val ${NTHRDS_LND}
+
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_ATM --val ${ROOTPE_ATM}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_CPL --val ${ROOTPE_CPL}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_OCN --val ${ROOTPE_OCN}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_WAV --val ${ROOTPE_WAV}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_GLC --val ${ROOTPE_GLC}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_ICE --val ${ROOTPE_ICE}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_ROF --val ${ROOTPE_ROF}
+        ./xmlchange --file env_mach_pes.xml --id ROOTPE_LND --val ${ROOTPE_LND}
+    fi
+
     # Turn on BFB flag
     ./xmlchange BFBFLAG=TRUE
 
     # Extracts input_data_dir in case it is needed for user edits to the namelist later
+    if [ "${DATA_ROOT}" != "" ]; then
+        mkdir -p ${DATA_ROOT}
+        ./xmlchange DIN_LOC_ROOT=${DATA_ROOT}
+    fi
     local input_data_dir=`./xmlquery DIN_LOC_ROOT --value`
+    echo "Input Data Path: ${DATA_ROOT}"
 
     # Custom user_nl
     user_nl
@@ -246,6 +354,7 @@ case_build() {
         fi
 
         # Run CIME case.build
+        # qcmd -- ./case.build
         ./case.build
 
         # Some user_nl settings won't be updated to *_in files under the run directory
@@ -276,7 +385,7 @@ runtime_options() {
     ./xmlchange HIST_OPTION=${HIST_OPTION,,},HIST_N=${HIST_N}
 
     # Coupler budgets (always on)
-    ./xmlchange BUDGETS=TRUE
+    # ./xmlchange BUDGETS=TRUE
 
     # Set resubmissions
     if (( RESUBMIT > 0 )); then
