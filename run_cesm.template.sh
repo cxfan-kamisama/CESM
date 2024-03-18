@@ -16,16 +16,16 @@ readonly CODE_REPO_URL="https://github.com/cxfan1997/CESM.git"
 readonly CODE_BRANCH="cxfan/SolarFarm"
 
 # Simulation
-readonly COMPSET="B1850"
-readonly RESOLUTION="f19_g17"
+readonly COMPSET="F2000climo"
+readonly RESOLUTION="f09_f09_mg17"
 readonly DATE=`date +%Y%m%d`
-readonly CASE_NAME="CESM2.1.3_${CODE_BRANCH//\//_}_${COMPSET}_${RESOLUTION}_${DATE}"
+readonly CASE_NAME="CESM2.1.3_${CODE_BRANCH//\//_}_${COMPSET}_${RESOLUTION}_20240109_CTRL"
 
 # Code and compilation
 readonly DEBUG_COMPILE=false
 
 # Run options
-readonly MODEL_START_TYPE="hybrid"  # 'initial', 'continue', 'branch', 'hybrid'
+readonly MODEL_START_TYPE="initial"  # 'initial', 'continue', 'branch', 'hybrid'
 readonly START_DATE="0001-01-01"
 
 # Additional options for 'branch' and 'hybrid'
@@ -60,7 +60,7 @@ if [ "${run}" != "production" ]; then
   readonly CASE_RUN_DIR=${CASE_ROOT}/tests/${run}/run
   readonly CASE_BUILD_DIR=${CASE_ROOT}/tests/${run}/build
   readonly PELAYOUT=${layout}
-  readonly WALLTIME="0:45:00"
+  readonly WALLTIME="0:15:00"
   readonly STOP_OPTION=${units}
   readonly STOP_N=${length}
   readonly REST_OPTION=${STOP_OPTION}
@@ -75,24 +75,24 @@ else
   readonly CASE_RUN_DIR=${CASE_ROOT}/run
   readonly CASE_BUILD_DIR=${CASE_ROOT}/build
   readonly PELAYOUT="L"
-  readonly WALLTIME="3:00:00"
+  readonly WALLTIME="12:00:00"
   readonly STOP_OPTION="nyears"
-  readonly STOP_N="1"
+  readonly STOP_N="3"
   readonly REST_OPTION="nyears"
   readonly REST_N="1"
   readonly RESUBMIT="0"
   readonly DO_SHORT_TERM_ARCHIVING=false
 
   # Custom pelayout
-  readonly CUSTOM_PELAYOUT=false
-  readonly NTASKS_ATM="-4"
-  readonly NTASKS_CPL="-4"
-  readonly NTASKS_OCN="-2"
-  readonly NTASKS_WAV="-1"
-  readonly NTASKS_GLC="-1"
-  readonly NTASKS_ICE="-2"
-  readonly NTASKS_ROF="-2"
-  readonly NTASKS_LND="-2"
+  readonly CUSTOM_PELAYOUT=true
+  readonly NTASKS_ATM="360"
+  readonly NTASKS_CPL="360"
+  readonly NTASKS_OCN="360"
+  readonly NTASKS_WAV="360"
+  readonly NTASKS_GLC="360"
+  readonly NTASKS_ICE="360"
+  readonly NTASKS_ROF="360"
+  readonly NTASKS_LND="360"
 
   readonly NTHRDS_ATM="1"
   readonly NTHRDS_CPL="1"
@@ -105,10 +105,10 @@ else
 
   readonly ROOTPE_ATM="0"
   readonly ROOTPE_CPL="0"
-  readonly ROOTPE_OCN="-4"
+  readonly ROOTPE_OCN="0"
   readonly ROOTPE_WAV="0"
   readonly ROOTPE_GLC="0"
-  readonly ROOTPE_ICE="-2"
+  readonly ROOTPE_ICE="0"
   readonly ROOTPE_ROF="0"
   readonly ROOTPE_LND="0"
 fi
@@ -118,14 +118,14 @@ readonly HIST_OPTION="nyears"
 readonly HIST_N="5"
 
 # Leave empty (unless you understand what it does)
-readonly OLD_EXECUTABLE=""
+readonly OLD_EXECUTABLE="/scratch/xianglei_root/xianglei1/cxfan/CESM_UMich/CESM2.1.3_cxfan_SolarFarm_F2000climo_f09_f09_mg17_20240104/build/cesm.exe"
 
 # --- Toggle flags for what to do ----
-do_checkout_code=true
+do_checkout_code=false
 do_create_newcase=true
 do_case_setup=true
-do_case_build=true
-do_case_submit=true
+do_case_build=false
+do_case_submit=false
 
 # --- Now, do the work ---
 
@@ -169,8 +169,8 @@ cat << EOF >> user_nl_cam
 EOF
 
 cat << EOF >> user_nl_clm
-use_solar_farm = .true.
-fsolarfarm = '${SCRATCH}/data/solarfarm_spec.nc'
+use_solar_farm = .false.
+fsolarfarm = '${SCRATCH}/data/solarfarm_spec_f09_f09_g17.nc'
 EOF
 
 }
